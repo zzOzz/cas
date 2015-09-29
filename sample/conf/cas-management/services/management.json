@@ -1,0 +1,7 @@
+{
+  "@class" : "org.jasig.cas.services.RegexRegisteredService",
+  "serviceId" : "^(http|https)://.*",
+  "name" : "Cas management",
+  "id" : 1,
+  "description" : "Cas management"
+}

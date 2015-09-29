@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd ">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>fr.universite-lyon.cas</groupId>
+  <artifactId>udl-cas-package</artifactId>
+  <packaging>pom</packaging>
+  <version>${udl.version}</version>
+  <modules>
+    <module>cas-management</module>
+    <module>cas</module>
+  </modules>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <warName>../cas</warName>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <!-- <dependencies>
+    <dependency>
+      <groupId>org.jasig.cas</groupId>
+      <artifactId>cas-server-webapp</artifactId>
+      <version>${cas.version}</version>
+      <type>war</type>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies> -->
+  <properties>
+    <cas.version>4.1.0</cas.version>
+    <udl.version>1.0.1-SNAPSHOT</udl.version>
+  </properties>
+  <repositories>
+    <repository>
+      <id>ja-sig</id>
+      <url>http://oss.sonatype.org/content/repositories/releases/
+      </url>
+    </repository>
+  </repositories>
+</project>

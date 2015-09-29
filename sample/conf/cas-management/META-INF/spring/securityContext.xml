@@ -1,0 +1,20 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+<sec:ldap-server id="ldapManagementServer" url="${ldap.authentication.server.urls}"
+                 manager-dn="${ldap.authentication.manager.managerdn}"
+                 manager-password="${ldap.authentication.manager.managerpassword}" />
+<sec:ldap-user-service id="userDetailsService" server-ref="ldapManagementServer"
+            group-search-base="${ldap.authentication.manager.group-search-base}"
+    	    group-role-attribute="${ldap.authentication.manager.group-role-attribute}"
+            group-search-filter="${ldap.authentication.manager.group-search-filter}"
+            user-search-base="${ldap.authentication.manager.user-search-base}"
+            user-search-filter="${ldap.authentication.manager.user-search-filter}"
+/>
+
+</beans>

@@ -1,0 +1,17 @@
+[Unit]
+Description=Cas UDL
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+WorkingDirectory=/data/docker/casudl/
+ExecStartPre=/usr/bin/git fetch --all
+ExecStartPre=/usr/bin/git reset --hard origin/master
+ExecStartPre=/usr/bin/git pull
+ExecStartPre=/data/docker/docker-compose -f /data/docker/casudl/docker-compose.yml -p casudl kill
+ExecStartPre=/data/docker/docker-compose -f /data/docker/casudl/docker-compose.yml -p casudl rm --force
+ExecStart=/data/docker/docker-compose -f /data/docker/casudl/docker-compose.yml -p casudl up
+
+[Install]
+WantedBy=multi-user.target

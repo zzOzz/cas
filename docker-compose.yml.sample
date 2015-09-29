@@ -1,0 +1,23 @@
+cas:
+  hostname: cas
+  domainname: my_domain.com
+  build: .
+  environment:
+    VIRTUAL_HOST: cas.my_domain.com
+    VIRTUAL_PROTO: https
+    VIRTUAL_PORT: 443
+    ADMIN_USER: admin
+    ADMIN_PASSWD: admin
+    CACERT_URL: http://cacert_url
+  ports:
+    - "443"
+nginx:
+  environment:
+    DEFAULT_HOST: local.dev
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - /var/run/docker.sock:/tmp/docker.sock
+    - /Users/vincent/Documents/my_certificate_folder:/etc/nginx/certs
+  image: jwilder/nginx-proxy

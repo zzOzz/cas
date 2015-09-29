@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:c="http://www.springframework.org/schema/c" xmlns:p="http://www.springframework.org/schema/p" xmlns:sec="http://www.springframework.org/schema/security" xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+<!-- <bean c:authenticator-ref="authenticator" class="org.jasig.cas.authentication.LdapAuthenticationHandler"
+     id="ldapAuthenticationHandler"
+     p:principalIdAttribute="sAMAccountName">
+    <property name="principalAttributeMap">
+      <map>
+
+        <entry key="displayName" value="displayName"/>
+      </map>
+    </property>
+    <property name="principalAttributeList">
+      <list>
+        <value>displayName</value>
+        <value>sAMAccountName</value>
+        <value>mail</value>
+      </list>
+    </property>
+  </bean> -->
+  <bean id="oauthAuthenticationHandler" class="org.jasig.cas.support.pac4j.authentication.handler.support.ClientAuthenticationHandler">
+      <constructor-arg index="0" ref="clients"/>
+  </bean>
+
+
+
+  <bean class="org.pac4j.oauth.client.FacebookClient" id="facebook1">
+    <property name="key" value="741668169272214"/>
+    <property name="secret" value="14eacccda6182247cf1090273420c562"/>
+    <property name="scope" value="email" />
+    <property name="fields" value="id,name,first_name,middle_name,last_name,gender,locale,languages,link,third_party_id,timezone,updated_time,verified,bio,birthday,education,email,hometown,interested_in,location,political,favorite_athletes,favorite_teams,quotes,relationship_status,religion,significant_other,website,work,friends,movies,music,books,likes,albums,events,groups,music.listens,picture" />
+  </bean>
+
+  <bean class="org.pac4j.oauth.client.TwitterClient" id="twitter1">
+    <property name="key" value="JieWwMd6XXFTq0YeanUBpI9IJ"/>
+    <property name="secret" value="xvZFELNidQQX05vpIOhStV2L7DGaBNyl2iWcmdGyOQz2oCZteb"/>
+  </bean>
+
+  <bean id="google1" class="org.pac4j.oauth.client.Google2Client">
+    <property name="key" value="332421020883-fsqrjjkomejcjcd5q5sioaghigfp6b84.apps.googleusercontent.com" />
+    <property name="secret" value="bmlWvxxc-dwqfcXEhSvmHH-a" />
+  </bean>
+
+  <bean class="org.pac4j.core.client.Clients" id="clients">
+    <property name="callbackUrl" value="https://id.universite-lyon.fr/cas/login"/>
+    <property name="clients">
+      <list>
+        <ref bean="facebook1"/>
+        <ref bean="twitter1"/>
+        <ref bean="google1"/>
+      </list>
+    </property>
+  </bean>
+  <bean id="clientAction" class="org.jasig.cas.support.pac4j.web.flow.ClientAction">
+      <constructor-arg index="0" ref="centralAuthenticationService"/>
+      <constructor-arg index="1" ref="clients"/>
+  </bean>
+</beans>

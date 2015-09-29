@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:aop="http://www.springframework.org/schema/aop" xmlns:c="http://www.springframework.org/schema/c" xmlns:p="http://www.springframework.org/schema/p" xmlns:sec="http://www.springframework.org/schema/security"
+  xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+  <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource" p:acquireIncrement="${ticket.database.pool.acquireIncrement:16}" p:acquireRetryAttempts="${ticket.database.pool.acquireRetryAttempts:5}"
+    p:acquireRetryDelay="${ticket.database.pool.acquireRetryDelay:2000}" p:checkoutTimeout="${ticket.database.pool.maxWait:2000}" p:driverClass="${ticket.database.driverClass:org.hsqldb.jdbcDriver}"
+    p:idleConnectionTestPeriod="${ticket.database.pool.idleConnectionTestPeriod:30}" p:initialPoolSize="${ticket.database.pool.minSize:6}" p:jdbcUrl="${ticket.database.jdbc.url:jdbc:hsqldb:mem:cas-ticket-registry}"
+    p:maxIdleTimeExcessConnections="${ticket.database.pool.maxIdleTime:1000}" p:maxPoolSize="${ticket.database.pool.maxSize:18}" p:minPoolSize="${ticket.database.pool.minSize:6}" p:password="${ticket.database.password:}"
+    p:preferredTestQuery="${ticket.database.pool.connectionHealthQuery:select 1}" p:user="${ticket.database.user:sa}"/>
+
+  <bean class="org.jasig.cas.ticket.registry.JpaTicketRegistry" id="ticketRegistry"/>
+
+  <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+
+  <util:list id="packagesToScan">
+    <value>org.jasig.cas.services</value>
+    <value>org.jasig.cas.ticket</value>
+    <value>org.jasig.cas.adaptors.jdbc</value>
+  </util:list>
+
+  <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" id="jpaVendorAdapter" p:generateDdl="true" p:showSql="true"/>
+
+  <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory" p:dataSource-ref="dataSource" p:jpaVendorAdapter-ref="jpaVendorAdapter" p:packagesToScan-ref="packagesToScan">
+    <property name="jpaProperties">
+      <props>
+        <prop key="hibernate.dialect">${ticket.database.dialect:org.hibernate.dialect.HSQLDialect}</prop>
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+        <prop key="hibernate.jdbc.batch_size">${ticket.database.batchSize:1}</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager" p:entityManagerFactory-ref="entityManagerFactory"/>
+
+  <tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <tx:attributes>
+      <tx:method name="delete*" read-only="false"/>
+      <tx:method name="save*" read-only="false"/>
+      <tx:method name="update*" read-only="false"/>
+      <tx:method name="get*" read-only="true"/>
+      <tx:method name="add*" read-only="false"/>
+      <tx:method name="*"/>
+    </tx:attributes>
+  </tx:advice>
+
+  <aop:config>
+    <aop:pointcut expression="execution(* org.jasig.cas.services.JpaServiceRegistryDaoImpl.*(..))" id="servicesManagerOperations"/>
+    <aop:pointcut expression="execution(* org.jasig.cas.ticket.registry.JpaTicketRegistry.*(..))" id="ticketRegistryOperations"/>
+    <aop:pointcut expression="execution(* org.jasig.cas.ticket.registry.support.JpaLockingStrategy.*(..))" id="ticketRegistryLockingOperations"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="servicesManagerOperations"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="ticketRegistryOperations"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="ticketRegistryLockingOperations"/>
+  </aop:config>
+
+  <!-- <bean c:centralAuthenticationService-ref="centralAuthenticationService" c:ticketRegistry-ref="ticketRegistry" class="org.jasig.cas.ticket.registry.support.DefaultTicketRegistryCleaner" id="ticketRegistryCleaner" p:lock-ref="cleanerLock"/>
+
+  <bean class="org.jasig.cas.ticket.registry.support.JpaLockingStrategy" id="cleanerLock" p:applicationId="cas-ticket-registry-cleaner" p:uniqueId="${host.name}"/>
+
+  <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean" id="jobDetailTicketRegistryCleaner" p:targetMethod="clean" p:targetObject-ref="ticketRegistryCleaner"/>
+
+  <bean class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean" id="triggerJobDetailTicketRegistryCleaner" p:jobDetail-ref="jobDetailTicketRegistryCleaner" p:repeatInterval="5000000" p:startDelay="20000"/> -->
+
+  <bean class="org.jasig.cas.services.JpaServiceRegistryDaoImpl" id="serviceRegistryDao"/>
+</beans>

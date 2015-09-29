@@ -1,0 +1,29 @@
+{
+  "@class" : "org.jasig.cas.services.RegexRegisteredService",
+  "serviceId" : "test.testad@ad.universite-lyon.fr",
+  "name" : "test",
+  "id" : 14970480832306,
+  "description" : "test",
+  "proxyPolicy" : {
+    "@class" : "org.jasig.cas.services.RefuseRegisteredServiceProxyPolicy"
+  },
+  "evaluationOrder" : 1,
+  "usernameAttributeProvider" : {
+    "@class" : "org.jasig.cas.services.DefaultRegisteredServiceUsernameProvider"
+  },
+  "logoutType" : "NONE",
+  "attributeReleasePolicy" : {
+    "@class" : "org.jasig.cas.services.ReturnAllAttributeReleasePolicy",
+    "principalAttributesRepository" : {
+      "@class" : "org.jasig.cas.authentication.principal.DefaultPrincipalAttributesRepository"
+    },
+    "authorizedToReleaseCredentialPassword" : false,
+    "authorizedToReleaseProxyGrantingTicket" : false
+  },
+  "accessStrategy" : {
+    "@class" : "org.jasig.cas.services.DefaultRegisteredServiceAccessStrategy",
+    "enabled" : true,
+    "ssoEnabled" : true,
+    "requireAllAttributes" : false
+  }
+}

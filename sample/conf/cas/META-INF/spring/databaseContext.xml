@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns:c="http://www.springframework.org/schema/c" xmlns:p="http://www.springframework.org/schema/p" xmlns:sec="http://www.springframework.org/schema/security" xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+       <bean id="sigedDataSource"
+         class="com.mchange.v2.c3p0.ComboPooledDataSource"
+         p:driverClass="${database.driverClass}"
+         p:jdbcUrl="${database.url}"
+         p:user="${database.user}"
+         p:password="${database.password}"
+         p:initialPoolSize="${database.pool.minSize}"
+         p:minPoolSize="${database.pool.minSize}"
+         p:maxPoolSize="${database.pool.maxSize}"
+         p:maxIdleTimeExcessConnections="${database.pool.maxIdleTime}"
+         p:checkoutTimeout="${database.pool.maxWait}"
+         p:acquireIncrement="${database.pool.acquireIncrement}"
+         p:acquireRetryAttempts="${database.pool.acquireRetryAttempts}"
+         p:acquireRetryDelay="${database.pool.acquireRetryDelay}"
+         p:idleConnectionTestPeriod="${database.pool.idleConnectionTestPeriod}"/>
+         <bean id="passwordEncoder"
+               class="org.jasig.cas.authentication.handler.DefaultPasswordEncoder"
+               c:encodingAlgorithm="SHA-1"
+               p:characterEncoding="UTF-8" />
+
+         <bean id="dbAuthHandler"
+               class="org.jasig.cas.adaptors.jdbc.QueryDatabaseAuthenticationHandler"
+               p:dataSource-ref="sigedDataSource"
+               p:passwordEncoder-ref="passwordEncoder"
+               p:sql="select substring(MotDePasse,3,500) from [dbo].[Utilisateurs] where identifiant=?" />
+         <!-- p:preferredTestQuery="${database.pool.connectionHealthQuery}"  -->
+</beans>
